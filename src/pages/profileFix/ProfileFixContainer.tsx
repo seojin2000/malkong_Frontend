@@ -1,19 +1,46 @@
 import React, { useState, useRef, useEffect } from "react";
-import ProfileFix from "./ProfileFix";
+import ProfileFix, { ProfileFixProps } from "./ProfileFix";
 import ProfileFixIcon from "./profilefixicon.svg";
-import userApi from "../api/userApi";
+import userApi from "../api/userApi"; // 기존 userApi 사용
 
-const ProfileFixContainer = () => {
+// userApi 인터페이스 정의
+interface UserApiInterface {
+    getProfile: () => Promise<UserProfileData>;
+    uploadProfileImage: (file: File) => Promise<ImageUploadResponse>;
+    updateProfile: (data: { username: string }) => Promise<any>;
+    withdrawUser: () => Promise<any>;
+}
+
+// 서버 응답 데이터 타입 정의
+interface UserProfileData {
+    nickname?: string;
+    profileImage?: string;
+    profileImageUrl?: string;
+    profile_image_url?: string;
+    profile_image?: string;
+    imageUrl?: string;
+    image_url?: string;
+    image?: string;
+    [key: string]: any; // 추가 속성을 위한 인덱스 시그니처
+}
+
+interface ImageUploadResponse {
+    profileImage?: string;
+    imageUrl?: string;
+    [key: string]: any; // 추가 속성을 위한 인덱스 시그니처
+}
+
+const ProfileFixContainer: React.FC = () => {
     // 상태 관리: 닉네임과 프로필 이미지
-    const [nickname, setNickname] = useState("");
-    const [profileImage, setProfileImage] = useState("");
-    const [isLoading, setIsLoading] = useState(true);
-    const [nicknameError, setNicknameError] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showWithdrawalConfirm, setShowWithdrawalConfirm] = useState(false);
-    const [imageFile, setImageFile] = useState(null);
-    const [imageUploadStatus, setImageUploadStatus] = useState("");
-    const fileInputRef = useRef(null);
+    const [nickname, setNickname] = useState<string>("");
+    const [profileImage, setProfileImage] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [nicknameError, setNicknameError] = useState<string>("");
+    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [showWithdrawalConfirm, setShowWithdrawalConfirm] = useState<boolean>(false);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imageUploadStatus, setImageUploadStatus] = useState<string>("");
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // profileImage 상태 변경 로그
     useEffect(() => {
@@ -21,7 +48,7 @@ const ProfileFixContainer = () => {
     }, [profileImage]);
 
     // 서버 응답 데이터 구조 분석 함수
-    const inspectServerData = (data) => {
+    const inspectServerData = (data: UserProfileData): void => {
         console.log('=== 서버 응답 데이터 상세 분석 ===');
         console.log('데이터 타입:', typeof data);
 
@@ -75,7 +102,7 @@ const ProfileFixContainer = () => {
     }, []);
 
     // 사용자 프로필 정보를 가져오는 함수
-    const fetchUserProfile = async () => {
+    const fetchUserProfile = async (): Promise<void> => {
         setIsLoading(true);
         console.log('=== 프로필 정보 가져오기 시작 ===');
 
@@ -90,7 +117,7 @@ const ProfileFixContainer = () => {
             }
 
             // userApi 모듈을 사용하여 프로필 정보 요청
-            const userData = await userApi.getProfile();
+            const userData: UserProfileData = await userApi.getProfile();
 
             // 응답 구조 상세 분석
             inspectServerData(userData);
@@ -105,7 +132,7 @@ const ProfileFixContainer = () => {
             }
 
             // 이미지 URL을 찾기 위한 여러 가능한 필드명 시도
-            let profileImageUrl = null;
+            let profileImageUrl: string | null = null;
 
             // 'profileImage' 필드를 먼저 확인
             if (userData.profileImage && typeof userData.profileImage === 'string') {
@@ -117,7 +144,7 @@ const ProfileFixContainer = () => {
 
                 for (const field of possibleImageFields) {
                     if (userData[field] && typeof userData[field] === 'string') {
-                        profileImageUrl = userData[field];
+                        profileImageUrl = userData[field] as string;
                         console.log(`이미지 URL을 필드 '${field}'에서 찾음:`, profileImageUrl);
                         break;
                     }
@@ -152,7 +179,8 @@ const ProfileFixContainer = () => {
 
         } catch (error) {
             console.error('프로필 정보를 불러오는데 실패했습니다:', error);
-            console.log('오류 상세 정보:', error.message || error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.log('오류 상세 정보:', errorMessage);
             // 서버에서 데이터를 가져오는 데 실패하면 기본 이미지 설정
             setProfileImage(ProfileFixIcon);
         } finally {
@@ -162,7 +190,7 @@ const ProfileFixContainer = () => {
     };
 
     // 닉네임 유효성 검사 함수
-    const validateNickname = () => {
+    const validateNickname = (): boolean => {
         if (nickname.length === 0) {
             setNicknameError("닉네임을 입력해주세요.");
             return false;
@@ -183,20 +211,23 @@ const ProfileFixContainer = () => {
     }, [nickname]);
 
     // 닉네임 입력 변경 핸들러
-    const handleNicknameChange = (e) => {
+    const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         setNickname(e.target.value);
     };
 
     // 이미지 클릭 핸들러
-    const handleImageClick = () => {
-        fileInputRef.current.click();
+    const handleImageClick = (): void => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
     };
 
     // 파일 선택 변경 핸들러
-    const handleFileChange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
 
+        const file = files[0];
         console.log('=== 이미지 파일 선택 처리 시작 ===');
         console.log('선택한 파일:', file.name, file.type, `${(file.size / 1024).toFixed(2)}KB`);
 
@@ -214,9 +245,11 @@ const ProfileFixContainer = () => {
 
         // 이미지 미리보기 업데이트
         const reader = new FileReader();
-        reader.onload = (e) => {
-            console.log('이미지 미리보기 설정 완료 (base64 데이터)');
-            setProfileImage(e.target.result);
+        reader.onload = (e: ProgressEvent<FileReader>) => {
+            if (e.target && typeof e.target.result === 'string') {
+                console.log('이미지 미리보기 설정 완료 (base64 데이터)');
+                setProfileImage(e.target.result);
+            }
         };
         reader.readAsDataURL(file);
 
@@ -227,13 +260,13 @@ const ProfileFixContainer = () => {
     };
 
     // 프로필 이미지 업로드 함수
-    const uploadProfileImage = async (file) => {
+    const uploadProfileImage = async (file: File): Promise<void> => {
         try {
             setImageUploadStatus("업로드 중...");
             console.log('서버에 이미지 업로드 요청 시작...');
 
             // userApi 모듈을 사용해 이미지 업로드
-            const responseData = await userApi.uploadProfileImage(file);
+            const responseData: ImageUploadResponse = await userApi.uploadProfileImage(file);
 
             // 성공 처리
             setImageUploadStatus(`이미지 업로드 성공`);
@@ -243,7 +276,7 @@ const ProfileFixContainer = () => {
             inspectServerData(responseData);
 
             // 백엔드에서 URL을 반환하는 경우:
-            let imageUrl = null;
+            let imageUrl: string | null = null;
 
             // 'profileImage' 필드 확인 (서버 응답에서 이 필드에 이미지 URL이 있을 것으로 예상)
             if (responseData && responseData.profileImage) {
@@ -274,13 +307,14 @@ const ProfileFixContainer = () => {
         } catch (error) {
             // 오류 처리
             console.error('이미지 업로드 실패:', error);
-            console.log('오류 상세 정보:', error.message || error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.log('오류 상세 정보:', errorMessage);
             setImageUploadStatus('이미지 업로드 실패. 다시 시도해주세요.');
         }
     };
 
     // 프로필 수정 제출 핸들러
-    const handleSubmit = async () => {
+    const handleSubmit = async (): Promise<void> => {
         // 유효성 검사
         if (!validateNickname()) {
             return;
@@ -303,7 +337,8 @@ const ProfileFixContainer = () => {
         } catch (error) {
             // 오류 처리
             console.error('프로필 수정 실패:', error);
-            console.log('오류 상세 정보:', error.message || error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.log('오류 상세 정보:', errorMessage);
             alert("프로필 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
         } finally {
             setIsSubmitting(false);
@@ -311,12 +346,12 @@ const ProfileFixContainer = () => {
     };
 
     // 회원 탈퇴 클릭 핸들러
-    const handleWithdrawalClick = () => {
+    const handleWithdrawalClick = (): void => {
         setShowWithdrawalConfirm(true);
     };
 
     // 회원 탈퇴 확인 핸들러
-    const handleWithdrawalConfirm = async () => {
+    const handleWithdrawalConfirm = async (): Promise<void> => {
         try {
             setIsSubmitting(true);
 
@@ -341,7 +376,7 @@ const ProfileFixContainer = () => {
     };
 
     // 회원 탈퇴 취소 핸들러
-    const handleWithdrawalCancel = () => {
+    const handleWithdrawalCancel = (): void => {
         setShowWithdrawalConfirm(false);
     };
 

@@ -3,21 +3,36 @@ import { useNavigate } from 'react-router-dom';
 import MyPage from './MyPage';
 import userApi from '../api/userApi';
 
-const MyPageContainer = () => {
-    const [userProfile, setUserProfile] = useState(null);
-    const [penaltyCount, setPenaltyCount] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+// 프로필 데이터 인터페이스 정의
+interface UserProfile {
+    username: string;
+    email: string;
+    profileImage?: string;
+}
+
+// API 응답 타입 정의
+interface ProfileApiResponse {
+    username: string;
+    email: string;
+    profileImage?: string;
+    [key: string]: any; // 추가 속성이 있을 수 있음
+}
+
+const MyPageContainer: React.FC = () => {
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+    const [penaltyCount, setPenaltyCount] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
 
     // 데이터 로딩 함수
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async (): Promise<void> => {
             try {
                 console.log('데이터 요청 시작...');
 
-                // 프로필 데이터 먼저 요청
-                const profileData = await userApi.getProfile();
+                // 프로필 데이터 먼저 요청 - 타입 단언(Type Assertion) 사용
+                const profileData = await userApi.getProfile() as ProfileApiResponse;
                 console.log('API에서 받아온 프로필 데이터:', profileData);
 
                 // 프로필 데이터 업데이트
@@ -32,8 +47,8 @@ const MyPageContainer = () => {
                 localStorage.setItem('email', profileData.email || '');
 
                 try {
-                    // 비속어 횟수 요청
-                    const count = await userApi.getPenaltyCount();
+                    // 비속어 횟수 요청 - 타입 단언 사용
+                    const count = await userApi.getPenaltyCount() as number;
                     console.log('API에서 받아온 비속어 횟수:', count);
 
                     // 숫자값이 직접 반환되므로 바로 상태 업데이트
@@ -44,7 +59,7 @@ const MyPageContainer = () => {
                 }
 
                 setLoading(false);
-            } catch (err) {
+            } catch (err: any) {
                 console.error('프로필 데이터 로딩 중 오류:', err);
                 setError('데이터를 불러오는데 실패했습니다: ' + err.message);
                 setLoading(false);
@@ -58,7 +73,7 @@ const MyPageContainer = () => {
     console.log('현재 컴포넌트 상태:', { loading, error, userProfile, penaltyCount });
 
     // 프로필 수정 페이지로 이동하는 핸들러 함수
-    const handleEditProfile = () => {
+    const handleEditProfile = (): void => {
         navigate('/profilefix');
     };
 

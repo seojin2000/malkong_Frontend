@@ -1,7 +1,23 @@
 import React from "react";
 import S from "./style";
 
-const MyPage = ({ loading, error, userProfile, penaltyCount, onEditProfile }) => {
+// 프로필 타입 정의
+interface UserProfile {
+  username?: string;
+  email?: string;
+  profileImage?: string;
+}
+
+// MyPage 컴포넌트에 전달되는 props의 타입 정의
+interface MyPageProps {
+  loading: boolean;
+  error: string | null;
+  userProfile: UserProfile | null;
+  penaltyCount: number;
+  onEditProfile: () => void;
+}
+
+const MyPage: React.FC<MyPageProps> = ({ loading, error, userProfile, penaltyCount, onEditProfile }) => {
   if (loading) {
     return <div>로딩 중...</div>;
   }
