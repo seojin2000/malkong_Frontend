@@ -8,7 +8,7 @@ import PostEdit from "./PostEdit";
  * - 주로 라우팅 연결 또는 레이아웃 목적에서 사용
  * - 실제 로직은 PostEdit.jsx 내부에서 처리됨
  */
-const PostEditContainer = () => {
+const PostEditContainer: React.FC = () => {
   return <PostEdit />;
 };
 

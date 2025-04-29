@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent, ChangeEvent } from "react";
 import S from "./style";
-import profileImageUrl from "./profile.svg"; // 기본 프로필 이미지
+import profileImageUrl from "./profile.svg"; 
 import auth from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -10,7 +10,14 @@ import { useNavigate } from "react-router-dom";
  * - 제목, 내용 입력 및 제출 기능
  * - 작성/수정 페이지에서 공통으로 사용
  */
-const PostForm = ({
+interface PostFormProps {
+  initialTitle?: string;
+  initialContent?: string;
+  onSubmit: (data: { title: string; content: string }) => Promise<void> | void;
+  onCancel: () => void;
+}
+
+const PostForm: React.FC<PostFormProps> = ({
   initialTitle = "",
   initialContent = "",
   onSubmit,
@@ -19,16 +26,16 @@ const PostForm = ({
   const navigate = useNavigate();
 
   // 입력 상태
-  const [title, setTitle] = useState(initialTitle);
-  const [content, setContent] = useState(initialContent);
-  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState<string>(initialTitle);
+  const [content, setContent] = useState<string>(initialContent);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // 사용자 정보
-  const [nickname, setNickname] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState<string>('');
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   // 욕설 제한 로직 (욕설 제한 기능 api 연동이 안되어서 구현 덜 됨. 수정 필요)
-  const [profanityCount, setProfanityCount] = useState(0);
+  const [profanityCount, setProfanityCount] = useState<number>(0);
 
   /**
    * 사용자 프로필 불러오기
@@ -46,7 +53,7 @@ const PostForm = ({
           setNickname(userData.username);
         }
       } catch (error) {
-        console.error("프로필 조회 실패:", error.message);
+        console.error("프로필 조회 실패:", (error as Error).message);
       }
     };
     fetchProfile();
@@ -81,7 +88,7 @@ const PostForm = ({
    * 폼 제출 핸들러
    * - 유효성 검사 후 onSubmit 실행
    */
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (canSubmit && onSubmit) {
       try {
@@ -91,6 +98,15 @@ const PostForm = ({
         setLoading(false);
       }
     }
+  };
+
+  
+  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const handleContentChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
   };
 
   /**
@@ -122,13 +138,13 @@ const PostForm = ({
                 type="text"
                 placeholder="제목 입력"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={handleTitleChange}
                 required
               />
               <S.TextArea
                 placeholder="글을 작성해 주세요..."
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={handleContentChange}
                 required
               />
             </S.ContentBody>

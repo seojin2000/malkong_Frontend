@@ -1,20 +1,26 @@
 import api from './axios';
 
-interface PostListResponse {
+// 게시글 아이템 타입
+export interface PostItem {
   postId: number;
   title: string;
   username: string;
   createdAt: string;
   updatedAt: string;
   count: number;
+  content: string;
 }
 
-interface SearchResponse extends PostListResponse {}
+// 게시글 목록 조회 응답 타입
+export interface PostListResponse {
+  content: PostItem[];
+  totalElements: number;
+}
 
 /**
  * 게시글 목록 조회
  */
-const postlist = async (page: number): Promise<PostListResponse[]> => {
+const postlist = async (page = 0): Promise<PostListResponse> => {
   const res = await api.get(`/post/list?page=${page}`);
   return res.data;
 };
@@ -24,24 +30,20 @@ const postlist = async (page: number): Promise<PostListResponse[]> => {
  */
 const search = async (
   keyword: string,
-  page: number = 0,
-  size: number = 8,
-  sort: string = 'createdAt',
-  direction: string = 'DESC'
-): Promise<SearchResponse[]> => {
+  page = 0,
+  size = 8,
+  sort = 'createdAt',
+  direction = 'DESC'
+): Promise<PostListResponse> => {
   const res = await api.get(`/search`, {
-    params: {
-      keyword,
-      page,
-      size,
-      sort,
-      direction,
-    },
+    params: { keyword, page, size, sort, direction },
   });
   return res.data;
 };
 
-export default {
+const postApi = {
   postlist,
   search,
 };
+
+export default postApi;

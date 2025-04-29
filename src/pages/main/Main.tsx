@@ -1,23 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import S from './style';
-import postApi from '../api/postlist';
+import postApi, { PostListResponse, PostItem } from '../api/postlist';  
 import auth from '../api/auth';
 
-const Main = () => {
+const Main: React.FC = () => {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const keyword = queryParams.get('keyword');
   const navigate = useNavigate();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [nickname, setNickname] = useState('');
-  const [posts, setPosts] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0); 
-  const postsPerPage = 8;
+  const queryParams = new URLSearchParams(location.search);
+  const keyword = queryParams.get('keyword');
 
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [nickname, setNickname] = useState<string>('');
+  const [posts, setPosts] = useState<PostItem[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+
+  const postsPerPage = 8;
   const totalPages = Math.ceil(totalCount / postsPerPage);
+
+  const fetchData = async () => {
+    try {
+      const data: PostListResponse = keyword
+        ? await postApi.search(keyword, currentPage)
+        : await postApi.postlist(currentPage);
+
+      setPosts(data.content);
+      setTotalCount(data.totalElements);
+    } catch (error) {
+      console.error('게시글 불러오기 실패:', (error as Error).message);
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,24 +43,14 @@ const Main = () => {
           setNickname(userData.username);
         }
       } catch (error) {
-        console.error('프로필 조회 실패:', error.message);
+        console.error('프로필 조회 실패:', (error as Error).message);
       }
     };
+
     fetchProfile();
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = keyword
-          ? await postApi.search(keyword, currentPage)
-          : await postApi.postlist(currentPage);
-        setPosts(data.content);
-        setTotalCount(data.totalElements);
-      } catch (error) {
-        console.error('게시글 불러오기 실패:', error.message);
-      }
-    };
     fetchData();
   }, [keyword, currentPage]);
 
@@ -73,7 +77,7 @@ const Main = () => {
                     <span>👁 {post.count}</span>
                   </div>
                   <h3 className="title">{post.title}</h3>
-                  <p className="content">{post.content}</p>
+                  <p className="content">{post.content}</p> 
                 </S.PostCard>
               ))
             ) : (

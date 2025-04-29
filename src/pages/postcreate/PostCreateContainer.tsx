@@ -8,7 +8,7 @@ import PostCreate from "./PostCreate";
  * - 주로 라우터 연결 또는 레이아웃 통일 목적
  * - 실제 로직은 PostCreate.jsx에서 처리됨
  */
-const PostCreateContainer = () => {
+const PostCreateContainer: React.FC = () => {
   return <PostCreate />;
 };
 

@@ -1,17 +1,19 @@
 import styled from "styled-components";
 
-const S = {};
+const S: { [key: string]: any } = {}; // 타입스크립트용 초기화
 
-// 공통 폰트 설정
+// ============================
+// 🧱 기본 설정
+// ============================
+
 const baseFont = `
   font-family: 'Pretendard', sans-serif;
 `;
 
-//
-// 레이아웃 구조
-//
+// ============================
+// 🧱 레이아웃 구조
+// ============================
 
-// 페이지 전체 Wrapper (바깥 영역)
 S.Wrapper = styled.div`
   ${baseFont}
   width: 100%;
@@ -21,21 +23,20 @@ S.Wrapper = styled.div`
   background-color: #fff;
 `;
 
-// 콘텐츠 최대 너비 제한
 S.Container = styled.div`
-  width: 100%;
-  max-width: 45.625rem; /* 730px */
-  margin: 0 auto;
   ${baseFont}
+  width: 100%;
+  max-width: 45.625rem;
+  margin: 0 auto;
 
   @media (max-width: 768px) {
     padding: 0 1rem;
   }
 `;
 
-//
-// 프로필 영역
-//
+// ============================
+// 🧱 프로필 영역
+// ============================
 
 S.Profile = styled.div`
   display: flex;
@@ -57,21 +58,21 @@ S.UserInfo = styled.div`
 `;
 
 S.Nickname = styled.span`
+  ${baseFont}
   font-size: 1.25rem;
   font-weight: 500;
   color: #000;
-  ${baseFont}
 `;
 
 S.DateText = styled.span`
+  ${baseFont}
   font-size: 1rem;
   color: #aaa;
-  ${baseFont}
 `;
 
-//
-// 글쓰기 박스 (제목 + 본문 입력 영역)
-//
+// ============================
+// 🧱 글쓰기 박스 영역
+// ============================
 
 S.ContentBox = styled.div`
   width: 100%;
@@ -103,6 +104,7 @@ S.ContentBody = styled.div`
 
 // 제목 입력창
 S.TitleInput = styled.input`
+  ${baseFont}
   font-size: 1.5rem;
   font-weight: 600;
   border: none;
@@ -110,15 +112,15 @@ S.TitleInput = styled.input`
   padding: 0.5rem 0.25rem;
   outline: none;
   color: #000;
-  ${baseFont}
 
   &::placeholder {
     color: #aaa;
   }
 `;
 
-// 본문 입력창 (textarea)
+// 본문 입력창
 S.TextArea = styled.textarea`
+  ${baseFont}
   flex: 1;
   width: 100%;
   border: none;
@@ -129,16 +131,15 @@ S.TextArea = styled.textarea`
   font-weight: 100;
   line-height: 1.75;
   color: #000;
-  ${baseFont}
 
   &::placeholder {
     color: #bbb;
   }
 `;
 
-//
-// 버튼 영역
-//
+// ============================
+// 🧱 버튼 영역
+// ============================
 
 S.ButtonRow = styled.div`
   width: 100%;
@@ -151,7 +152,6 @@ S.ButtonRow = styled.div`
   }
 `;
 
-// 이전 화면으로 버튼
 S.BackButton = styled.button`
   width: 140px;
   height: 50px;
@@ -172,8 +172,12 @@ S.BackButton = styled.button`
   }
 `;
 
-// 작성 완료 버튼
-S.SubmitButton = styled.button`
+// SubmitButton의 active prop 타입 정의
+interface SubmitButtonProps {
+  active: boolean;
+}
+
+S.SubmitButton = styled.button<SubmitButtonProps>`
   width: 140px;
   height: 50px;
   background-color: ${(props) => (props.active ? "#5784E1" : "#797979")};
@@ -193,7 +197,10 @@ S.SubmitButton = styled.button`
   }
 `;
 
-// 이용 제한 경고 문구
+// ============================
+// 🧱 욕설 제한 메시지 영역
+// ============================
+
 S.RestrictionMessageBox = styled.div`
   width: 100%;
   padding: 0.75rem 1rem;

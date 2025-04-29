@@ -4,6 +4,7 @@ import PostFormContainer from "./PostFormContainer";
 import auth from "../api/auth";
 import { createPost } from "../api/postcreate";
 
+
 /**
  * 게시글 작성 페이지
  * - 로그인 상태 확인
@@ -11,7 +12,12 @@ import { createPost } from "../api/postcreate";
  * - PostFormContainer 컴포넌트를 사용하여 폼을 렌더링
  */
 
-const PostCreate = () => {
+interface CreatePostResponse {
+  postId: number;
+}
+
+
+const PostCreate: React.FC<{}> = () => {
   const navigate = useNavigate();
 
   /**
@@ -41,9 +47,9 @@ const PostCreate = () => {
    * - API: POST /api/post/create
    * - 성공 시: 해당 게시글 상세 페이지로 이동
    */
-  const handleSubmit = async ({ title, content }) => {
+  const handleSubmit = async ({ title, content }: { title: string; content: string }) => {
     try {
-      const response = await createPost({ title, content });
+      const response = await createPost({ title, content }) as CreatePostResponse;
       navigate(`/post/${response.postId}`); // 성공 후 해당 게시글 상세 페이지로 이동
     } catch (error) {
       alert("게시글 작성 중 오류가 발생했습니다.");

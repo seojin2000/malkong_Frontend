@@ -1,10 +1,10 @@
 import React from 'react';
 import Main from './Main';
 
-const MainContainer = () => {
+const MainContainer: React.FC = () => {
   return (
     <div>
-      <Main/>
+      <Main />
     </div>
   );
 };

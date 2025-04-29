@@ -13,11 +13,16 @@ import { updatePost } from "../api/postedit";
  * - 수정 API 연결
  * - PostFormContainer를 통해 수정 폼 렌더링
  */
-const PostEdit = () => {
-  const { id } = useParams(); // URL 파라미터에서 게시글 ID 추출
-  const [post, setPost] = useState(null); // 게시글 데이터 상태
-  const [isAuthor, setIsAuthor] = useState(false); // 작성자 여부
-  const [loading, setLoading] = useState(true); // 로딩 상태
+interface PostData {
+  title: string;
+  content: string;
+}
+
+const PostEdit: React.FC = () => {
+  const { id } = useParams<{ id: string }>(); // URL 파라미터에서 게시글 ID 추출
+  const [post, setPost] = useState<PostData | null>(null); // 게시글 데이터 상태
+  const [isAuthor, setIsAuthor] = useState<boolean>(false); // 작성자 여부
+  const [loading, setLoading] = useState<boolean>(true); // 로딩 상태
 
   /**
    * 게시글 불러오기 + 작성자 검증
@@ -31,10 +36,7 @@ const PostEdit = () => {
         const config = { headers: { Authorization: `Bearer ${token}` } };
 
         // 게시글 데이터 요청
-        const response = await axios.get(
-          `http://localhost:8080/api/post/${id}?increaseView=false`,
-          config
-        );
+        const response = await axios.get(`http://localhost:8080/api/post/${id}?increaseView=false`, config);
         const data = response.data;
 
         // 작성자 확인
@@ -57,19 +59,21 @@ const PostEdit = () => {
    * 게시글 수정 요청
    * - API: PUT /api/post/update/{id}
    */
-  const handleSubmit = async (updatedPost) => {
+  const handleSubmit = async (updatedPost: PostData) => {
     try {
-      await updatePost(id, updatedPost);
+      if (!id) return;
+      await updatePost(Number(id), updatedPost); 
       window.location.href = `/post/${id}`; // 수정 성공 후 해당 페이지로 이동
     } catch (error) {
       alert("게시글 수정에 실패했습니다.");
     }
   };
-
+  
   /**
    * 수정 취소 (게시글 상세 페이지로 이동)
    */
   const handleCancel = () => {
+    if (!id) return;
     window.location.href = `/post/${id}`;
   };
 

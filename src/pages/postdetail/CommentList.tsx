@@ -1,32 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import S from './style';
+import React, { useEffect, useState, ChangeEvent } from 'react';
+import * as S from './style';
 import defaultProfile from './profile.svg';
 import { fetchComments, deleteComment, updateComment } from '../api/comment';
 
 /**
- * 댓글 리스트 컴포넌트
- * - 댓글 조회
- * - 인라인 댓글 수정 기능
- * - 본인 댓글일 경우 수정/삭제 버튼 제공
+ * CommentList
+ * 
+ * - 댓글 목록 조회 및 표시
+ * - 댓글 삭제 및 수정 기능 지원
  */
-const CommentList = ({ postId, refreshTrigger, currentUser }) => {
-  const [comments, setComments] = useState([]);
-  const [error, setError] = useState(null);
+interface Comment {
+  commentId: number;
+  username: string;
+  date: string;
+  content: string;
+  profile: string | null;
+}
 
-  // 현재 수정 중인 댓글 ID
-  const [editingId, setEditingId] = useState(null);        
-  // 수정 중인 댓글 내용
-  const [editingContent, setEditingContent] = useState(''); 
+interface CommentListProps {
+  postId: number;
+  currentUser: string | null;
+  badWordCount: number;
+  refreshTrigger: number;
+}
 
-  /**
-   * 댓글 목록 조회
-   * - postId 또는 refreshTrigger가 바뀔 때마다 호출됨
-   */
+const CommentList: React.FC<CommentListProps> = ({ postId, currentUser, badWordCount, refreshTrigger }) => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+
+  // 댓글 목록 불러오기 (postId 또는 refreshTrigger가 변할 때마다)
   useEffect(() => {
     const loadComments = async () => {
       try {
         const data = await fetchComments(postId);
-        const mapped = data.map((c) => ({
+        const mapped = data.map((c: any) => ({
           commentId: c.commentId,
           username: c.username,
           date: new Date(c.createdAt).toLocaleString('ko-KR'),
@@ -41,13 +50,9 @@ const CommentList = ({ postId, refreshTrigger, currentUser }) => {
     };
 
     if (postId) loadComments();
-  }, [postId, refreshTrigger]);
+  }, [postId, refreshTrigger]); // refreshTrigger 변경될 때 댓글 다시 fetch
 
-  /**
-   * 댓글 삭제
-   * - 본인 댓글만 삭제 가능 (상위 조건에서 버튼 제한)
-   */
-  const handleDelete = async (commentId) => {
+  const handleDelete = async (commentId: number) => {
     if (!window.confirm('댓글을 삭제하시겠습니까?')) return;
 
     try {
@@ -60,46 +65,44 @@ const CommentList = ({ postId, refreshTrigger, currentUser }) => {
     }
   };
 
-  // 수정 모드 진입
-  const startEditing = (comment) => {
+  const startEditing = (comment: Comment) => {
     setEditingId(comment.commentId);
     setEditingContent(comment.content);
   };
 
-  // 수정 모드 취소
   const cancelEditing = () => {
     setEditingId(null);
     setEditingContent('');
   };
 
-  // 댓글 수정 완료
   const saveEditing = async () => {
     if (!editingContent.trim()) {
       alert('댓글 내용을 입력해주세요.');
       return;
     }
 
+    if (editingId === null) return;
+
     try {
-      await updateComment(editingId, editingContent); 
-
-      // 수정된 내용으로 로컬 상태 업데이트
-      setComments((prev) =>
-        prev.map((c) =>
-          c.commentId === editingId ? { ...c, content: editingContent } : c
-        )
+      await updateComment(editingId, editingContent);
+      setEditingId(null);
+      setEditingContent('');
+      // 수정 완료 후 바로 새로고침 없이 목록 상태만 업데이트
+      setComments(prev =>
+        prev.map(c => c.commentId === editingId ? { ...c, content: editingContent } : c)
       );
-
-      cancelEditing();
     } catch (err) {
       console.error('❌ 댓글 수정 실패:', err);
       alert('댓글 수정에 실패했습니다.');
     }
   };
 
+  const isRestricted = badWordCount > 0 && badWordCount % 5 === 0;
+
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
+    <>
       {comments.map((c) => (
         <S.Comment key={c.commentId}>
           <div className="top">
@@ -109,7 +112,7 @@ const CommentList = ({ postId, refreshTrigger, currentUser }) => {
               <span className="date">{c.date}</span>
             </div>
 
-            {/* 본인 댓글만 수정/삭제 버튼 노출 */}
+            {/* 본인 댓글일 경우 수정/삭제 버튼 제공 */}
             {currentUser === c.username && editingId !== c.commentId && (
               <S.CommentControlButtons>
                 <span onClick={() => startEditing(c)}>수정</span>
@@ -119,12 +122,12 @@ const CommentList = ({ postId, refreshTrigger, currentUser }) => {
             )}
           </div>
 
-          {/* 인라인 수정창 또는 일반 댓글 보기 */}
+          {/* 수정 모드 */}
           {editingId === c.commentId ? (
             <>
               <S.CommentEditTextarea
                 value={editingContent}
-                onChange={(e) => setEditingContent(e.target.value)}
+                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setEditingContent(e.target.value)}
               />
               <S.EditButtonGroup>
                 <button onClick={saveEditing}>수정 완료</button>
@@ -136,7 +139,7 @@ const CommentList = ({ postId, refreshTrigger, currentUser }) => {
           )}
         </S.Comment>
       ))}
-    </div>
+    </>
   );
 };
 
