@@ -17,7 +17,7 @@ interface CreatePostResponse {
 }
 
 
-const PostCreate: React.FC<{}> = () => {
+const PostCreate: React.FC = () => {
   const navigate = useNavigate();
 
   /**
