@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const S = {};
+const S: { [key: string]: any } = {}; // 스타일 객체에 임시로 any 타입 부여 (필요 시 명확한 타입으로 대체 가능)
 
 S.MainWrapper = styled.div`
   display: flex;
@@ -11,7 +11,6 @@ S.MainWrapper = styled.div`
   padding-top: 40px;
   justify-content: center;
   gap: 20px;
- 
 `;
 
 S.ContentLeft = styled.div`
@@ -28,14 +27,18 @@ S.SidebarRight = styled.aside`
   align-items: center;
   padding: 12px 15px;
   gap: 18px;
-
   width: 296px;
   height: 240px;
   top: 40px;
   background: white;
   border-radius: 10px;
-  box-shadow: -5px 5px 10px rgba(230, 230, 230, 0.2), 5px -5px 10px rgba(230, 230, 230, 0.2), -5px -5px 10px rgba(255, 255, 255, 0.9), 5px 5px 13px rgba(230, 230, 230, 0.9), inset 1px 1px 2px rgba(255, 255, 255, 0.3), inset -1px -1px 2px rgba(230, 230, 230, 0.5);
-
+  box-shadow:
+    -5px 5px 10px rgba(230, 230, 230, 0.2),
+    5px -5px 10px rgba(230, 230, 230, 0.2),
+    -5px -5px 10px rgba(255, 255, 255, 0.9),
+    5px 5px 13px rgba(230, 230, 230, 0.9),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.3),
+    inset -1px -1px 2px rgba(230, 230, 230, 0.5);
   text-align: center;
 `;
 
@@ -50,7 +53,6 @@ S.UserAvatar = styled.div`
 S.Nickname = styled.p`
   font-weight: bold;
   color: black;
-  
 `;
 
 S.ActionButton = styled.button`
@@ -89,7 +91,7 @@ S.PostCard = styled.div`
   background: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
-  span{
+  span {
     color: #797979;
   }
 
@@ -131,12 +133,11 @@ S.PostCard = styled.div`
   }
 `;
 
-S.button=styled.div`
-width: 100%;
-display: flex;
-justify-content: center;
-
-`
+S.button = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
 
 S.Pagination = styled.div`
   display: flex;
@@ -148,18 +149,15 @@ S.Pagination = styled.div`
     background: none;
     border: none;
     font-size: 16px;
-    color: #5A5A5A;
+    color: #5a5a5a;
     cursor: pointer;
     width: 427px;
     height: 50px;
-    &:hover{
+
+    &:hover {
       color: red;
     }
   }
 `;
-
-
-
-
 
 export default S;

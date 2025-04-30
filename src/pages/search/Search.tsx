@@ -3,29 +3,41 @@ import { useLocation } from 'react-router-dom';
 import S from './style';
 import postApi from '../api/postlist';
 
-const Search = () => {
+interface Post {
+  postId: number;
+  username: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  count: number;
+}
+
+interface SearchResponse {
+  content: Post[];
+  totalElements: number;
+}
+
+const Search: React.FC = () => {
   const location = useLocation();
 
-  const [keyword, setKeyword] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [nickname, setNickname] = useState('');
-  const [posts, setPosts] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [keyword, setKeyword] = useState<string>('');
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [nickname, setNickname] = useState<string>('');
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const postsPerPage = 8;
 
   const totalPages = Math.ceil(totalCount / postsPerPage);
 
-  //URL 쿼리 변화 감지해서 keyword 상태 변경
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-    const newKeyword = queryParams.get("keyword") || '';
+    const newKeyword = queryParams.get('keyword') || '';
     setKeyword(newKeyword);
     setCurrentPage(1);
     console.log('🔁 keyword set from URL:', newKeyword);
   }, [location.search]);
 
-  // 로그인 여부 확인
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     const savedNickname = localStorage.getItem('username');
@@ -35,7 +47,6 @@ const Search = () => {
     }
   }, []);
 
-  // 검색 API 호출
   useEffect(() => {
     const fetchSearchedPosts = async () => {
       if (!keyword || currentPage < 1) return;
@@ -47,24 +58,20 @@ const Search = () => {
           backendPage: currentPage - 1,
         });
 
-        const data = await postApi.search(keyword, currentPage - 1);
-        console.log('[응답 데이터]', data);
-        console.log('[게시글 목록]', data.content);
-        console.log('[총 게시글 수]', data.totalElements);
-
+        const data: SearchResponse = await postApi.search(keyword, currentPage - 1);
         setPosts(data.content);
         setTotalCount(data.totalElements);
       } catch (err) {
-        console.error('[검색 실패]', err.message);
-        console.error('[에러 정보]', err);
+        const error = err as Error;
+        console.error('[검색 실패]', error.message);
+        console.error('[에러 정보]', error);
       }
     };
 
     fetchSearchedPosts();
   }, [keyword, currentPage]);
 
-  // 페이지 이동 + 스크롤 최상단 처리
-  const goToPage = (page) => {
+  const goToPage = (page: number) => {
     if (page === currentPage) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
