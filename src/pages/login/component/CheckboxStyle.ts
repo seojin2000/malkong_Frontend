@@ -9,8 +9,8 @@ const Checkbox = styled.div`
   text-align: center;
 
   & input[type="checkbox"] {
-    appearance: none; 
-    -webkit-appearance: none; 
+    appearance: none;
+    -webkit-appearance: none;
     width: 20px;
     height: 20px;
     border: 2px solid gray;
@@ -24,11 +24,11 @@ const Checkbox = styled.div`
   & input[type="checkbox"]:checked {
     background-color: #5784E1;
     border-color: #5784E1;
-  } 
+  }
 
 
   & input[type="checkbox"]:checked::before {
-    content: ''; 
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;

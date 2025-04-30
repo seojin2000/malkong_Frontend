@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import S from '../findid/style';
+import S from './style';
 import { useForm } from 'react-hook-form';
 import auth from '../../api/auth';
 import { useNavigate } from 'react-router-dom';

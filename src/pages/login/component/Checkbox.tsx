@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import S from '../component/CheckboxStyle';
+import S from './CheckboxStyle';
 
 interface CheckboxProps {
   setButtonColor: (isActive: boolean) => void;

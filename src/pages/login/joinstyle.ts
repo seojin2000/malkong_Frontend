@@ -1,9 +1,16 @@
 import styled from "styled-components";
 
-const S = {};
+// 타입 정의를 위한 인터페이스
+interface InputProps {
+    $isValid?: boolean;
+}
 
-// 전체 페이지 래퍼
-S.JoinPageWrapper = styled.div`
+interface StatusMessageProps {
+    $success?: boolean;
+}
+
+// 각 스타일드 컴포넌트 선언
+const JoinPageWrapper = styled.div`
   width: 100%;
   min-height: 100vh;
   background-color: white;
@@ -13,15 +20,13 @@ S.JoinPageWrapper = styled.div`
   padding-top: 120px;
 `;
 
-// 메인 컨텐츠
-S.JoinContent = styled.div`
+const JoinContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-// 로고 영역
-S.LogoWrapper = styled.div`
+const LogoWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
@@ -35,8 +40,7 @@ S.LogoWrapper = styled.div`
   }
 `;
 
-// 회원가입 박스
-S.JoinBox = styled.div`
+const JoinBox = styled.div`
   width: 560px;
   background: #fff;
   border-radius: 12px;
@@ -53,22 +57,19 @@ S.JoinBox = styled.div`
   }
 `;
 
-// 각 Input과 메세지를 감싸는 Wrapper
-S.InputWrapper = styled.div`
+const InputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
 `;
 
-// Input과 버튼을 나란히 두는 영역
-S.InputWithButton = styled.div`
+const InputWithButton = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
 `;
 
-// 공통 Input 스타일
-S.Input = styled.input`
+const Input = styled.input<InputProps>`
   width: 100%;
   height: 44px;
   padding: 10px 14px;
@@ -83,8 +84,7 @@ S.Input = styled.input`
   }
 `;
 
-// "중복확인" 버튼 스타일
-S.CheckButton = styled.button`
+const CheckButton = styled.button`
   width: 80px;
   height: 44px;
   background-color: #5784e1;
@@ -100,8 +100,7 @@ S.CheckButton = styled.button`
   }
 `;
 
-// 가입 완료 버튼
-S.Button = styled.button`
+const Button = styled.button`
   width: 100%;
   padding: 14px;
   background-color: #555;
@@ -117,25 +116,38 @@ S.Button = styled.button`
   }
 `;
 
-// 비밀번호 조건 안내 텍스트
-S.PasswordConditionText = styled.p`
+const PasswordConditionText = styled.p<InputProps>`
   font-size: 14px;
   margin-top: 6px;
   color: ${({ $isValid }) => ($isValid ? "black" : "red")};
 `;
 
-// 에러 메세지 (Validation 에러용)
-S.ErrorMessage = styled.p`
+const ErrorMessage = styled.p`
   font-size: 14px;
   color: red;
   margin-top: 4px;
 `;
 
-// 중복 확인 결과, 매칭 결과 메세지
-S.StatusMessage = styled.p`
+const StatusMessage = styled.p<StatusMessageProps>`
   font-size: 14px;
   margin-top: 4px;
   color: ${({ $success }) => ($success ? 'green' : 'red')};
 `;
+
+// 모든 스타일드 컴포넌트를 객체로 내보내기
+const S = {
+    JoinPageWrapper,
+    JoinContent,
+    LogoWrapper,
+    JoinBox,
+    InputWrapper,
+    InputWithButton,
+    Input,
+    CheckButton,
+    Button,
+    PasswordConditionText,
+    ErrorMessage,
+    StatusMessage
+};
 
 export default S;

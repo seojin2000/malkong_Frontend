@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 
-const S = {};
-
-S.LoginPageWrapper = styled.div`
+// 각 스타일드 컴포넌트 선언
+const LoginPageWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -10,7 +9,7 @@ S.LoginPageWrapper = styled.div`
   position: relative;
 `;
 
-S.LoginBox = styled.div`
+const LoginBox = styled.div`
   width: 560px;
   min-height: 100px;
   position: absolute;
@@ -33,7 +32,7 @@ S.LoginBox = styled.div`
   }
 `;
 
-S.Input = styled.input`
+const Input = styled.input`
   width: 100%;
   padding: 12px 16px;
   font-size: 16px;
@@ -43,7 +42,7 @@ S.Input = styled.input`
   color: black;
 `;
 
-S.LoginButton = styled.button`
+const LoginButton = styled.button`
   width: 100%;
   padding: 14px;
   background-color: #797979;
@@ -60,7 +59,7 @@ S.LoginButton = styled.button`
   }
 `;
 
-S.HelperLinks = styled.div`
+const HelperLinks = styled.div`
   font-size: 14px;
   color: #797979;
   margin-bottom: 20px;
@@ -74,7 +73,7 @@ S.HelperLinks = styled.div`
   }
 `;
 
-S.JoinSection = styled.div`
+const JoinSection = styled.div`
   font-size: 14px;
   color: #c2185b;
   font-weight: bold;
@@ -88,5 +87,15 @@ S.JoinSection = styled.div`
     text-decoration: underline;
   }
 `;
+
+// 모든 스타일드 컴포넌트를 객체로 묶기
+const S = {
+    LoginPageWrapper,
+    LoginBox,
+    Input,
+    LoginButton,
+    HelperLinks,
+    JoinSection
+};
 
 export default S;

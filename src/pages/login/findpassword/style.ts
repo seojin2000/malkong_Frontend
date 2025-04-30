@@ -1,8 +1,7 @@
 import styled from "styled-components";
 
-const S = {};
-
-S.JoinPageWrapper = styled.div`
+// 스타일드 컴포넌트를 선언한 후 객체로 묶는 방식으로 변경
+const JoinPageWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
@@ -11,12 +10,10 @@ S.JoinPageWrapper = styled.div`
   padding-top: 120px;
   background-color: white;
   
-
   p{
     font-size: 10px;
     color: black;
   }
-
 
   .mainLogo{
     width: 100%;
@@ -28,7 +25,7 @@ S.JoinPageWrapper = styled.div`
   }
 `;
 
-S.JoinBox = styled.div`
+const JoinBox = styled.div`
   width: 560px;
   min-height: 100px;
   background: #fff;
@@ -60,7 +57,7 @@ S.JoinBox = styled.div`
   }
 `;
 
-S.Input = styled.input`
+const Input = styled.input`
   width: 100%;
   padding: 14px;
   border: 1px solid #ccc;
@@ -69,7 +66,7 @@ S.Input = styled.input`
   color: black;
 `;
 
-S.Button = styled.button`
+const Button = styled.button`
   width: 100%;
   padding: 14px;
   background-color: #555;
@@ -84,25 +81,26 @@ S.Button = styled.button`
   }
 `;
 
-S.Notice = styled.p`
+const Notice = styled.p`
   font-size: 12px;
   color: #555;
 `;
 
-S.CheckboxGroup = styled.div`
+const CheckboxGroup = styled.div`
   display: flex;
   flex-direction: column;
   font-size: 12px;
   color: #5784E1;
   gap: 6px;
 `;
-S.JoinContent = styled.div`
+
+const JoinContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
-S.LogoWrapper = styled.div`
+const LogoWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
@@ -113,5 +111,16 @@ S.LogoWrapper = styled.div`
   }
 `;
 
+// 모든 스타일드 컴포넌트를 객체로 내보내기
+const S = {
+    JoinPageWrapper,
+    JoinBox,
+    Input,
+    Button,
+    Notice,
+    CheckboxGroup,
+    JoinContent,
+    LogoWrapper
+};
 
 export default S;
