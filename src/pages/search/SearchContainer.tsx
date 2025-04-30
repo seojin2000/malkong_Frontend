@@ -1,10 +1,10 @@
 import React from 'react';
 import Search from './Search';
 
-const SearchContainer = () => {
+const SearchContainer: React.FC = () => {
   return (
     <div>
-      <Search/>
+      <Search />
     </div>
   );
 };
